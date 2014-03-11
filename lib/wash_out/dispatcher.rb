@@ -148,17 +148,17 @@ module WashOut
     def _catch_soap_errors
       yield
     rescue SOAPError => error
-      render_soap_error(error.message, error.code)
+      render_soap_error(error.message, error.code, error.secCode, error.secMessage)
     end
 
     # Render a SOAP error response.
     #
     # Rails do not support sequental rescue_from handling, that is, rescuing an
     # exception from a rescue_from handler. Hence this function is a public API.
-    def render_soap_error(message, code=nil)
+    def render_soap_error(message, code=nil, secCode=nil, secMessage=nil)
       render :template => "wash_with_soap/#{soap_config.wsdl_style}/error", :status => 500,
              :layout => false,
-             :locals => { :error_message => message, :error_code => (code || 'Server') },
+             :locals => { :error_message => message, :error_code => (code || 'Server'), :secCode => secCode, :secMessage => secMessage },
              :content_type => 'text/xml'
     end
 
